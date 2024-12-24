@@ -12,6 +12,13 @@ const SocketHandler = (req, res) => {
 
         io.on('connection', (socket) => {
             console.log("server connected")
+            socket.on("join-room", (roomId, userId) => {
+                console.log("new user from websocket")
+                console.log("a new user with id " + roomId + " joined" + userId);
+                socket.join(roomId);
+                socket.broadcast.to(roomId).emit("user-connected", id) // id == userId
+            })
+
         })
     }
     res.end()

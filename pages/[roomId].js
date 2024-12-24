@@ -11,10 +11,35 @@ const Room = () => {
   console.log(peer)
 
   useEffect(() => {
-    socket?.on('connect', () => {
-      console.log(socket.id)
+    if(!socket || !peer || !stream) return;
+    
+    const handleuserConnections = (newUser) => {
+        console.log(newUser, "new user connected")
+        const call = peer.call(newUser, stream)
+
+        call.on('stream', (incomingStream) => {
+            console.log("incoming stream from" + newUser)
+        })
+    }
+    socket.on("user-connected", handleuserConnections)
+    
+    
+    return () => {
+        socket.off("user-connected", handleuserConnections)
+    }
+  }, [peer, socket, stream])
+
+  useEffect(() => {
+    if(!peer || !stream) return;
+    peer.on('call', (call) => {
+        const { peer: caller} = call;
+        call.answer(stream)
+
+        call.on('stream', (incomingStream) => {
+            console.log("incoming stream from" + caller)
+        })
     })
-  }, [socket])
+  },[peer, stream])
 
     return (
         <div>

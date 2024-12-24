@@ -1,18 +1,35 @@
-import { useSocket } from "@/context/socket"
-import { useEffect } from "react"
-
+import {v4 as uuidv4} from 'uuid'
+import { useRouter } from 'next/navigation'
+import styles from "@/styles/home.module.css"
+import { useState } from 'react'
 export default function Home() {
-  const socket = useSocket()
+  const router = useRouter()
+  const [roomId, setRoomId] = useState('')
+  const createAndJoin = () => {
+    const roomId = uuidv4()
+    router.push(`/${roomId}`)
+  } 
 
-  useEffect(() => {
-    socket?.on('connect', () => {
-      console.log(socket.id)
-    })
-  }, [socket])
+  const JoinRoom = () => {
+    if(roomId) {
+      router.push(`/${roomId}`)
+  } else {
+    alert('Please enter a room ID')  // add better error handling here!  e.g., room doesn't exist, connection error etc.
+  }
+    }
   
   return (
-    <div>
-      <h1>Screen time</h1>
+    <div className={styles.homeContainer}> 
+      <h1 className="homeTitle">Streambudi</h1>
+      <div className={styles.enterRoom}>
+        <input type="text" className={styles.inputext} placeholder='Enter Room ID' value={roomId} onChange={(e) => setRoomId(e.target.value)} />
+        <button className={styles.button} onClick={JoinRoom}> join a room</button>
+
+      </div>
+      <span className={styles.seperatorText}>
+    --------------- OR ---------------
+      </span>
+      <button className={styles.button} onClick={createAndJoin}>Createa new room</button>
     </div>
   )
 }

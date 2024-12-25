@@ -1,27 +1,17 @@
-.playerContainer {
-    @apply relative overflow-hidden mb-5 h-full;
-  }
+.copyContainer {
+  @apply flex flex-col absolute text-white border border-white rounded p-2;
+  left: 30px;
+  bottom: 100px;
+
   
-  .active {
-    @apply rounded-lg;
-  }
-  
-  .notActive {
-    @apply rounded-md h-min;
-    width: 200px;
-    -webkit-box-shadow: 0px 0px 11px -1px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 0px 0px 11px -1px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 11px -1px rgba(0, 0, 0, 0.75);
-  }
-  
-  .icon {
-    @apply text-white absolute right-2 bottom-2;
-  }
-  
-  .user {
-    @apply text-white;
-  }
-  
-  .notPlaying {
-    @apply flex items-center justify-center;
-  }
+}
+.hr {
+  @apply my-1;
+}
+
+.copyDescription {
+  @apply flex items-center text-sm;
+}
+.copyHeading {
+  @apply text-base;
+}

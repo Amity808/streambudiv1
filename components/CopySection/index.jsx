@@ -1,15 +1,24 @@
-import ReactPlayer from "react-player";
 import cs from "classnames"
 import style from "./index.module.css"
-const Player = (props) => {
-    const {playerId, url, muted, playing, isActive} = props;
+import { Copy } from "lucide-react"
+import { CopyToClipboard } from "react-copy-to-clipboard"
+const CopySection = (props) => {
+    const {roomId} = props;
     return (
-        <div className={cs()}>
-            <ReactPlayer
-            key={playerId} url={url} muted={muted} playing={playing} isActive={isActive} />
+        <div className={style.copyContainer}>
+            <div className={style.copyHeading}>
+                Copy Room Id
+            </div>
+            <hr className="hr"/>
+            <div className={style.copyDescription}>
+                <span>{roomId}</span>
+                <CopyToClipboard text={roomId}>
+                    <Copy className={`ml-3 cursor-pointer`} />
+                </CopyToClipboard>
+            </div>
         </div>
     )
 }
 
 
-export default Player
+export default CopySection

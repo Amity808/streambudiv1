@@ -16,7 +16,7 @@ const SocketHandler = (req, res) => {
                 console.log("new user from websocket")
                 console.log("a new user with id " + roomId + " joined" + userId);
                 socket.join(roomId);
-                socket.broadcast.to(roomId).emit("user-connected", id) // id == userId
+                socket.broadcast.to(roomId).emit("user-connected", userId) // id == userId
             })
 
         })

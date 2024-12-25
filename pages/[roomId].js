@@ -3,10 +3,13 @@ import { useEffect } from "react"
 import usePeers from "@/hooks/usePeer"
 import useMediaStream from "../hooks/useMediaStream"
 import Player from "../components/player"
+import usePlayer from "../hooks/usePlayer"
+import styles from "../styles/room.module.css"
 const Room = () => {
     const socket = useSocket()
   const { peer, myId} = usePeers()
   const { stream } = useMediaStream()
+  const { players, setPlayers, playerHightlighted, nonHighlightedPlayers } = usePlayer(myId)
 
   console.log(peer)
 
@@ -19,6 +22,14 @@ const Room = () => {
 
         call.on('stream', (incomingStream) => {
             console.log("incoming stream from" + newUser)
+            setPlayers((prev) => ({
+                ...prev,
+                [newUser]: {
+                    url: incomingStream,
+                    muted: true,
+                    playing: true
+                }
+            }))
         })
     }
     socket.on("user-connected", handleuserConnections)
@@ -27,27 +38,67 @@ const Room = () => {
     return () => {
         socket.off("user-connected", handleuserConnections)
     }
-  }, [peer, socket, stream])
+  }, [peer, setPlayers, socket, stream])
 
   useEffect(() => {
     if(!peer || !stream) return;
     peer.on('call', (call) => {
-        const { peer: caller} = call;
+        const { peer: callerId} = call;
         call.answer(stream)
 
         call.on('stream', (incomingStream) => {
-            console.log("incoming stream from" + caller)
+            console.log("incoming stream from" + callerId + ":" + incomingStream)
+            setPlayers((prev) => ({
+                ...prev,
+                [callerId]: {
+                    url: incomingStream,
+                    muted: true,
+                    playing: true
+                }
+            }))
         })
     })
-  },[peer, stream])
+  },[peer, setPlayers, stream])
+
+  useEffect(() => {
+    if(!stream || !myId) return;
+    console.log("setting my stream " + myId)
+    setPlayers((prev) => ({
+        ...prev,
+        [myId]: {
+            url: stream,
+            muted: false,
+            playing: true
+        }
+    }))
+  }, [myId, setPlayers, stream])
+
+  console.log(players)
 
     return (
         <div>
             <h1>Room</h1>
-
             <div>
-                <Player  url={stream} muted playing playerId={myId}/>
+                <div className={styles.activePlayerContainer}>
+                    {playerHightlighted && (
+                                                    <Player url={playerHightlighted?.url} muted={playerHightlighted?.muted} playing={playerHightlighted?.playing} isActive={true} />
+
+                    )}
+                </div>
+                <div className={styles.inActivePlayerContainer}>
+                {
+                    Object.keys(nonHighlightedPlayers).map((playerId) => {
+                        const { url, muted, playing} = nonHighlightedPlayers[playerId]
+                        return (
+                            <Player key={playerId} url={url} muted={muted} playing={playing} isActive={false}/>
+                        )
+                    })
+                }
+                </div>
+                
             </div>
+
+           
         </div>
     )
 }
